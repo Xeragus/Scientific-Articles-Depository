@@ -13,17 +13,20 @@ const articles = [
     {
         name: 'Quantum mechanics in the field of thermoenergy',
         field: 'Physics',
-        id: '1'
+        id: '1',
+        author_id: '2'
     },
     {
         name: 'Implementing graph-like structures in algorithms',
         field: 'Software Engineering',
-        id: '2'
+        id: '2',
+        author_id: '1'
     },
     {
         name: 'Photosyntesis in the early pilo stage',
         field: 'Biology',
-        id: '3'
+        id: '3',
+        author_id: '3'
     },
 ]
 
