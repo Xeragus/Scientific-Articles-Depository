@@ -1,11 +1,13 @@
 const graphql = require('graphql')
-const { 
-    GraphQLObjectType, 
-    GraphQLString, 
-    GraphQLSchema,
-    GraphQLID
-    } = graphql
-const _ = require('lodash')
+    ,   { 
+            GraphQLObjectType, 
+            GraphQLString, 
+            GraphQLSchema,
+            GraphQLID
+        } = graphql
+    ,   _ = require('lodash')
+    ,   AuthorType = require('./author/author')
+    ,   ArticleType = require('./article/article')
 
 const articles = [
     {
@@ -25,14 +27,24 @@ const articles = [
     },
 ]
 
-const ArticleType = new GraphQLObjectType({
-    name: 'Article',
-    fields: () => ({
-        id: { type: GraphQLString },
-        name: { type: GraphQLString },
-        field: { type: GraphQLString }
-    })
-})
+const authors = [
+    {
+        id: '1',
+        name: 'Joe Doe',
+        title: 'PhD in Physics'
+    },
+    {
+        id: '2',
+        name: 'Mark Gwen',
+        title: 'PhD in Computer Science and Engineering',
+    },
+    {
+        id: '3',
+        name: 'Angela Blade',
+        title: 'PhD in Microbiology'
+    }
+]
+
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -42,6 +54,15 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 return _.find(articles, {
+                    id: args.id
+                })
+            }
+        },
+        author: { 
+            type: AuthorType,
+            args: { id: { type: GraphQLID } },
+            resolve(parent, args) {
+                return _.find(authors, {
                     id: args.id
                 })
             }
