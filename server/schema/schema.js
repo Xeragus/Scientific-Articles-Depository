@@ -3,11 +3,12 @@ const graphql = require('graphql')
             GraphQLObjectType, 
             GraphQLString, 
             GraphQLSchema,
-            GraphQLID
+            GraphQLID,
+            GraphQLList
         } = graphql
     ,   _ = require('lodash')
-    ,   AuthorType = require('./author/author')
-    ,   ArticleType = require('./article/article')
+    // ,   AuthorType = require('./author/author')
+    // ,   ArticleType = require('./article/article')
 
 const articles = [
     {
@@ -24,6 +25,12 @@ const articles = [
     },
     {
         name: 'Photosyntesis in the early pilo stage',
+        field: 'Biology',
+        id: '3',
+        author_id: '3'
+    },
+    {
+        name: 'Development of pre-frontal cortex',
         field: 'Biology',
         id: '3',
         author_id: '3'
@@ -48,6 +55,36 @@ const authors = [
     }
 ]
 
+const AuthorType = new GraphQLObjectType({
+    name: 'Author',
+    fields: () => ({
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        title: { type: GraphQLString },
+        articles: {
+            type: new GraphQLList(ArticleType),
+            resolve(parent, args) {
+                return _.filter(articles, { author_id: parent.id })
+            }
+        }
+    })
+})
+
+const ArticleType = new GraphQLObjectType({
+    name: 'Article',
+    fields: () => ({
+        id: { type: GraphQLID },
+        name: { type: GraphQLString },
+        field: { type: GraphQLString },
+        author: {
+            type: AuthorType,
+            resolve(parent, args) {
+                return _.find(authors, { id: parent.author_id })
+            }
+        }
+    })
+})
+
 
 const RootQuery = new GraphQLObjectType({
     name: 'RootQueryType',
@@ -61,6 +98,12 @@ const RootQuery = new GraphQLObjectType({
                 })
             }
         },
+        articles: {
+            type: new GraphQLList(ArticleType),
+            resolve(parent, args) {
+                return articles
+            }
+        },
         author: { 
             type: AuthorType,
             args: { id: { type: GraphQLID } },
@@ -68,6 +111,12 @@ const RootQuery = new GraphQLObjectType({
                 return _.find(authors, {
                     id: args.id
                 })
+            }
+        },
+        authors: {
+            type: new GraphQLList(AuthorType),
+            resolve(parent, args) {
+                return authors
             }
         }
     }
