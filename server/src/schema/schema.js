@@ -1,59 +1,16 @@
 const graphql = require('graphql')
-    ,   { 
-            GraphQLObjectType, 
-            GraphQLString, 
-            GraphQLSchema,
-            GraphQLID,
-            GraphQLList
-        } = graphql
-    ,   _ = require('lodash')
-    // ,   AuthorType = require('./author/author')
-    // ,   ArticleType = require('./article/article')
+,   { 
+        GraphQLObjectType, 
+        GraphQLString, 
+        GraphQLSchema,
+        GraphQLID,
+        GraphQLList,
+        GraphQLInt
+    } = graphql
+,   _ = require('lodash')
+,   Article = require('../models/article')
+,   Author = require('../models/author')
 
-const articles = [
-    {
-        name: 'Quantum mechanics in the field of thermoenergy',
-        field: 'Physics',
-        id: '1',
-        author_id: '2'
-    },
-    {
-        name: 'Implementing graph-like structures in algorithms',
-        field: 'Software Engineering',
-        id: '2',
-        author_id: '1'
-    },
-    {
-        name: 'Photosyntesis in the early pilo stage',
-        field: 'Biology',
-        id: '3',
-        author_id: '3'
-    },
-    {
-        name: 'Development of pre-frontal cortex',
-        field: 'Biology',
-        id: '3',
-        author_id: '3'
-    },
-]
-
-const authors = [
-    {
-        id: '1',
-        name: 'Joe Doe',
-        title: 'PhD in Physics'
-    },
-    {
-        id: '2',
-        name: 'Mark Gwen',
-        title: 'PhD in Computer Science and Engineering',
-    },
-    {
-        id: '3',
-        name: 'Angela Blade',
-        title: 'PhD in Microbiology'
-    }
-]
 
 const AuthorType = new GraphQLObjectType({
     name: 'Author',
@@ -122,6 +79,27 @@ const RootQuery = new GraphQLObjectType({
     }
 })
 
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addAuthor: {
+            type: AuthorType,
+            args: {
+                name: { type: GraphQLString },
+                title: { type: GraphQLString }
+            },
+            resolve(parent, args) {
+                let author = new Author({
+                    name: args.name,
+                    title: args.title
+                })
+                return author.save()
+            }
+        }
+    }
+})
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation
 })
