@@ -21,7 +21,9 @@ const AuthorType = new GraphQLObjectType({
         articles: {
             type: new GraphQLList(ArticleType),
             resolve(parent, args) {
-                return _.filter(articles, { author_id: parent.id })
+                return Article.find({
+                    author_id: parent.id
+                })
             }
         }
     })
@@ -36,7 +38,7 @@ const ArticleType = new GraphQLObjectType({
         author: {
             type: AuthorType,
             resolve(parent, args) {
-                return _.find(authors, { id: parent.author_id })
+                return Author.findById(parent.author_id)
             }
         }
     })
@@ -50,30 +52,26 @@ const RootQuery = new GraphQLObjectType({
             type: ArticleType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return _.find(articles, {
-                    id: args.id
-                })
+                return Article.findById(args.id)
             }
         },
         articles: {
             type: new GraphQLList(ArticleType),
             resolve(parent, args) {
-                return articles
+                return Article.find({})
             }
         },
         author: { 
             type: AuthorType,
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
-                return _.find(authors, {
-                    id: args.id
-                })
+                return Author.findById(args.id)
             }
         },
         authors: {
             type: new GraphQLList(AuthorType),
             resolve(parent, args) {
-                return authors
+                return Author.find({})
             }
         }
     }
@@ -94,6 +92,23 @@ const Mutation = new GraphQLObjectType({
                     title: args.title
                 })
                 return author.save()
+            }
+        },
+        addArticle: {
+            type: ArticleType,
+            args: {
+                name: { type: GraphQLString },
+                field: { type: GraphQLString },
+                author_id: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                let article = new Article({
+                    name: args.name,
+                    field: args.field,
+                    author_id: args.author_id
+                })
+
+                return article.save()
             }
         }
     }
